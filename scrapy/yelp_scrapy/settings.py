@@ -18,7 +18,6 @@ NEWSPIDER_MODULE = 'yelp_scrapy.spiders'
 MONGODB_DATABASE='yelp_scrapy'
 MONGODB_SERVER = "localhost"
 MONGODB_PORT = 27017
-MONGODB_COLLECTION = "reviews"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'yelp_scrapy (+http://www.yourdomain.com)'

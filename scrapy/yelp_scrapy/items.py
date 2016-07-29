@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
-# Define here the models for your scraped items
-#
-# See documentation in:
-# http://doc.scrapy.org/en/latest/topics/items.html
-
 import scrapy
 
 
-class YelpRestourantReviews(scrapy.Item):
-    review_text = scrapy.Field()
-    review_date = scrapy.Field()
-    review_rating = scrapy.Field()
+class Reviews(scrapy.Item):
+    text = scrapy.Field()
+    date = scrapy.Field()
+    rating = scrapy.Field()
+    business_id = scrapy.Field()
+
+
+class Business(scrapy.Item):
+    name = scrapy.Field()
+    url = scrapy.Field()
+    icon = scrapy.Field()
+    status = scrapy.Field()
 
