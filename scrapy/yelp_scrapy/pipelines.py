@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import pymongo
+import time
+
+from datetime import datetime
 from scrapy.exceptions import DropItem
 from scrapy.conf import settings
 
@@ -44,14 +47,20 @@ class CleanUpPipeline(object):
     def process_item(self, item, spider):
         if spider.name == "reviews":
             if item['date']:
-                item['date'] = ''.join(item['date']).strip()
+                # lets get most recent review date and clean up empty strings
+                doc_date = ' '.join(item['date']).split()
+                # now converting it to unix timestamp
+                date_object = datetime.strptime(doc_date[-1], '%m/%d/%Y')
+                item['date'] = int(float(time.mktime(date_object.timetuple())))
             else:
                 raise DropItem("Found empty item: {0}".format(item))
 
             if item['text']:
                 item['text'] = ' '.join(item['text'])
             if item['rating']:
-                item['rating'] = item['rating'][0]
+                # lets get most recent rating and convert it to Int
+                rating_list = ' '.join(item['rating']).split()
+                item['rating'] = int(float(rating_list[-1]))
 
         else:
             if item['name']:
