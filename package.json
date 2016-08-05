@@ -1,0 +1,28 @@
+{
+  "name": "yreviews",
+  "version": "1.0.0",
+  "description": "Performs NLP on Yelp reviews",
+  "main": "index.js",
+  "dependencies": {
+    "grunt": "^1.0.1"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-react-jsx": "^6.8.0",
+    "babel-preset-react": "^6.11.1",
+    "grunt-babel": "^6.0.0",
+    "grunt-contrib-uglify": "^2.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/desurus/yelp-reviews.git"
+  },
+  "author": "Oleksandr Kryshchenko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/desurus/yelp-reviews/issues"
+  },
+  "homepage": "https://github.com/desurus/yelp-reviews#readme"
+}
