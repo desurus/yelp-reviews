@@ -20,13 +20,22 @@ module.exports = function(grunt) {
                     'static/build/<%= pkg.name %>.js': 'static/src/<%= pkg.name %>.js'
                 }
             }
-        } 
+        },
+        watch: {
+            files: ['static/src/*.js'],
+            tasks: ['default'],
+            options: {
+                spawn: false,
+            },
+        }
     });
 
     // Load the plugin that provides the "uglify" task.
     grunt.loadNpmTasks('grunt-contrib-uglify');
     // Load the bebel plugin
-    grunt.loadNpmTasks('grunt-babel'); 
+    grunt.loadNpmTasks('grunt-babel');
+    // Load the watch plugin
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     // Default task(s).
     grunt.registerTask('default', ['babel', 'uglify']);
