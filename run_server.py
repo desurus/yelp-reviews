@@ -4,6 +4,7 @@
 import pymongo
 import ConfigParser
 import os
+import json
 
 from bson.json_util import dumps
 from bson.objectid import ObjectId
@@ -32,19 +33,23 @@ def get_businesses():
 
 @app.route('/api/v1.0/reviews/<business_id>/', methods=['GET'])
 def get_reviews(business_id):
-    db = setup_mongo()
-    business_bson_id = ObjectId(business_id)
-    cursor = db.reviews.find({'business_id': business_bson_id}).sort([('date', pymongo.ASCENDING)])
-    result = []
-    for document in cursor:
-        result.append({
-            "id": str(document['_id']),
-            "rating": document['rating'],
-            "score": document['score'],
-            "date": document['date'],
-        })
+    try:
+        db = setup_mongo()
+        business_bson_id = ObjectId(business_id)
+        cursor = db.reviews.find({'business_id': business_bson_id}).sort([('date', pymongo.ASCENDING)])
+        result = []
+        for document in cursor:
+            result.append({
+                "id": str(document['_id']),
+                "rating": document['rating'],
+                "score": document['score'],
+                "date": document['date'],
+            })
 
-    return jsonify(result)
+        return jsonify(result)
+    except:
+        response = json.dumps({"status": 404, "details": "document id not found"})
+        return response, 404
 
 
 @app.route('/', methods=['GET'])
