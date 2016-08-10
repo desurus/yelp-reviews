@@ -36,14 +36,16 @@ def get_reviews(business_id):
     try:
         db = setup_mongo()
         business_bson_id = ObjectId(business_id)
-        cursor = db.reviews.find({'business_id': business_bson_id}).sort([('date', pymongo.ASCENDING)])
+        cursor = db.reviews_avarage.find({'business_id': business_bson_id})
         result = []
+
         for document in cursor:
             result.append({
-                "id": str(document['_id']),
+                "business_id": str(document['business_id']),
                 "rating": document['rating'],
                 "score": document['score'],
                 "date": document['date'],
+                "num_reviews": document['num_reviews'],
             })
 
         return jsonify(result)

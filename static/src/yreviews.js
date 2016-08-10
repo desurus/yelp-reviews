@@ -67,7 +67,9 @@ var Reviews = React.createClass({
                     </a>
                 </div>
                 <div className="row">
-                    <div className="col-md-12" id="reviews-graph"></div>
+                    <div className="col-md-12">
+                        <svg id="reviews-graph"></svg>
+                    </div>
                 </div>
             </div>    
         );
@@ -80,9 +82,8 @@ function drawPlot(api_url) {
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom,
         height2 = 500 - margin2.top - margin2.bottom;
-
-    var parseDate = d3.time.format("%b %Y").parse;
-
+    
+    
     var x = d3.time.scale().range([0, width]),
         x2 = d3.time.scale().range([0, width]),
         y = d3.scale.linear().range([height, 0]),
@@ -98,17 +99,17 @@ function drawPlot(api_url) {
 
     var area = d3.svg.area()
         .interpolate("monotone")
-        .x(function(d) { return x(d.date); })
+        .x(function(d) { return x(d3.time.format("%b %Y").parse(d.date)); })
         .y0(height)
         .y1(function(d) { return y(d.rating); });
 
     var area2 = d3.svg.area()
         .interpolate("monotone")
-        .x(function(d) { return x2(d.date); })
+        .x(function(d) { return x2(d3.time.format("%b %Y").parse(d.date)); })
         .y0(height2)
         .y1(function(d) { return y2(d.rating); });
 
-    var svg = d3.select("#reviews-graph").append("svg")
+    var svg = d3.select("#reviews-graph")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
 
@@ -126,44 +127,42 @@ function drawPlot(api_url) {
         .attr("class", "context")
         .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-    d3.json(api_url, type, function(error, data) {
-        x.domain(d3.extent(data.map(function(d) { return d.date; })));
-        y.domain([0, d3.max(data.map(function(d) { return d.rating; }))]);
+    d3.json(api_url, function(error, data) {
+        x.domain(d3.extent(data.map(function(d) { return d3.time.format("%b %Y").parse(d.date); })));
+        y.domain([0, d3.max(data.map(function(d) { return +d.rating; }))]);
         x2.domain(x.domain());
         y2.domain(y.domain());
-        
-        console.log(x2.domain(x.domain()));
-        
-        focus.append("path")
-            .datum(data)
-            .attr("class", "area")
-            .attr("d", area);
 
-        focus.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+    focus.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", area);
 
-        focus.append("g")
-            .attr("class", "y axis")
-            .call(yAxis);
+    focus.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
 
-        context.append("path")
-            .datum(data)
-            .attr("class", "area")
-            .attr("d", area2);
+    focus.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+    
+    context.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", area2);
 
-        context.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + height2 + ")")
-            .call(xAxis2);
+    context.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height2 + ")")
+        .call(xAxis2);
 
-        context.append("g")
-            .attr("class", "x brush")
-            .call(brush)
-            .selectAll("rect")
-            .attr("y", -6)
-            .attr("height", height2 + 7);
+    context.append("g")
+        .attr("class", "x brush")
+        .call(brush)
+        .selectAll("rect")
+        .attr("y", -6)
+        .attr("height", height2 + 7);
     });
 
     function brushed() {
@@ -171,13 +170,6 @@ function drawPlot(api_url) {
         focus.select(".area").attr("d", area);
         focus.select(".x.axis").call(xAxis);
     }
-
-    function type(d) {
-        // d.date = parseDate(d.date);
-        d.date = d.date;
-        d.rating = +d.rating;
-        return d;
-    } 
 };
 
 function handleNewHash() {

@@ -106,7 +106,11 @@ var Reviews = React.createClass({
             React.createElement(
                 'div',
                 { className: 'row' },
-                React.createElement('div', { className: 'col-md-12', id: 'reviews-graph' })
+                React.createElement(
+                    'div',
+                    { className: 'col-md-12' },
+                    React.createElement('svg', { id: 'reviews-graph' })
+                )
             )
         );
     }
@@ -118,8 +122,6 @@ function drawPlot(api_url) {
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom,
         height2 = 500 - margin2.top - margin2.bottom;
-
-    var parseDate = d3.time.format("%b %Y").parse;
 
     var x = d3.time.scale().range([0, width]),
         x2 = d3.time.scale().range([0, width]),
@@ -133,18 +135,18 @@ function drawPlot(api_url) {
     var brush = d3.svg.brush().x(x2).on("brush", brushed);
 
     var area = d3.svg.area().interpolate("monotone").x(function (d) {
-        return x(d.date);
+        return x(d3.time.format("%b %Y").parse(d.date));
     }).y0(height).y1(function (d) {
         return y(d.rating);
     });
 
     var area2 = d3.svg.area().interpolate("monotone").x(function (d) {
-        return x2(d.date);
+        return x2(d3.time.format("%b %Y").parse(d.date));
     }).y0(height2).y1(function (d) {
         return y2(d.rating);
     });
 
-    var svg = d3.select("#reviews-graph").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom);
+    var svg = d3.select("#reviews-graph").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom);
 
     svg.append("defs").append("clipPath").attr("id", "clip").append("rect").attr("width", width).attr("height", height);
 
@@ -152,17 +154,15 @@ function drawPlot(api_url) {
 
     var context = svg.append("g").attr("class", "context").attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-    d3.json(api_url, type, function (error, data) {
+    d3.json(api_url, function (error, data) {
         x.domain(d3.extent(data.map(function (d) {
-            return d.date;
+            return d3.time.format("%b %Y").parse(d.date);
         })));
         y.domain([0, d3.max(data.map(function (d) {
-            return d.rating;
+            return +d.rating;
         }))]);
         x2.domain(x.domain());
         y2.domain(y.domain());
-
-        console.log(x2.domain(x.domain()));
 
         focus.append("path").datum(data).attr("class", "area").attr("d", area);
 
@@ -181,13 +181,6 @@ function drawPlot(api_url) {
         x.domain(brush.empty() ? x2.domain() : brush.extent());
         focus.select(".area").attr("d", area);
         focus.select(".x.axis").call(xAxis);
-    }
-
-    function type(d) {
-        // d.date = parseDate(d.date);
-        d.date = d.date;
-        d.rating = +d.rating;
-        return d;
     }
 };
 
