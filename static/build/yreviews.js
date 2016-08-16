@@ -116,13 +116,15 @@ var Reviews = React.createClass({
     }
 });
 
+/*
 function drawPlot(api_url) {
-    var margin = { top: 10, right: 10, bottom: 100, left: 40 },
-        margin2 = { top: 430, right: 10, bottom: 20, left: 40 },
+    var margin = {top: 10, right: 10, bottom: 100, left: 40},
+        margin2 = {top: 430, right: 10, bottom: 20, left: 40},
         width = 960 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom,
         height2 = 500 - margin2.top - margin2.bottom;
-
+    
+    
     var x = d3.time.scale().range([0, width]),
         x2 = d3.time.scale().range([0, width]),
         y = d3.scale.linear().range([height, 0]),
@@ -132,49 +134,76 @@ function drawPlot(api_url) {
         xAxis2 = d3.svg.axis().scale(x2).orient("bottom"),
         yAxis = d3.svg.axis().scale(y).orient("left");
 
-    var brush = d3.svg.brush().x(x2).on("brush", brushed);
+    var brush = d3.svg.brush()
+        .x(x2)
+        .on("brush", brushed);
 
-    var area = d3.svg.area().interpolate("monotone").x(function (d) {
-        return x(d3.time.format("%b %Y").parse(d.date));
-    }).y0(height).y1(function (d) {
-        return y(d.rating);
-    });
+    var area = d3.svg.area()
+        .interpolate("monotone")
+        .x(function(d) { return x(d3.time.format("%b %Y").parse(d.date)); })
+        .y0(height)
+        .y1(function(d) { return y(d.rating); });
 
-    var area2 = d3.svg.area().interpolate("monotone").x(function (d) {
-        return x2(d3.time.format("%b %Y").parse(d.date));
-    }).y0(height2).y1(function (d) {
-        return y2(d.rating);
-    });
+    var area2 = d3.svg.area()
+        .interpolate("monotone")
+        .x(function(d) { return x2(d3.time.format("%b %Y").parse(d.date)); })
+        .y0(height2)
+        .y1(function(d) { return y2(d.rating); });
+    
+    var svg = d3.select("#reviews-graph")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
 
-    var svg = d3.select("#reviews-graph").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom);
+    svg.append("defs").append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height);
 
-    svg.append("defs").append("clipPath").attr("id", "clip").append("rect").attr("width", width).attr("height", height);
+    var focus = svg.append("g")
+        .attr("class", "focus")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    var focus = svg.append("g").attr("class", "focus").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var context = svg.append("g")
+        .attr("class", "context")
+        .attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
 
-    var context = svg.append("g").attr("class", "context").attr("transform", "translate(" + margin2.left + "," + margin2.top + ")");
-
-    d3.json(api_url, function (error, data) {
-        x.domain(d3.extent(data.map(function (d) {
-            return d3.time.format("%b %Y").parse(d.date);
-        })));
-        y.domain([0, d3.max(data.map(function (d) {
-            return +d.rating;
-        }))]);
+    d3.json(api_url, function(error, data) {
+        x.domain(d3.extent(data.map(function(d) { return d3.time.format("%b %Y").parse(d.date); })));
+        y.domain([0, d3.max(data.map(function(d) { return +d.rating; }))]);
         x2.domain(x.domain());
         y2.domain(y.domain());
 
-        focus.append("path").datum(data).attr("class", "area").attr("d", area);
+    focus.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", area);
 
-        focus.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
+    focus.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
 
-        focus.append("g").attr("class", "y axis").call(yAxis);
+    focus.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+    
+    context.append("path")
+        .datum(data)
+        .attr("class", "area")
+        .attr("d", area2);
 
-        context.append("path").datum(data).attr("class", "area").attr("d", area2);
+    context.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height2 + ")")
+        .call(xAxis2);
 
-        context.append("g").attr("class", "x axis").attr("transform", "translate(0," + height2 + ")").call(xAxis2);
-
-        context.append("g").attr("class", "x brush").call(brush).selectAll("rect").attr("y", -6).attr("height", height2 + 7);
+    context.append("g")
+        .attr("class", "x brush")
+        .call(brush)
+        .selectAll("rect")
+        .attr("y", -6)
+        .attr("height", height2 + 7);
     });
 
     function brushed() {
@@ -183,6 +212,7 @@ function drawPlot(api_url) {
         focus.select(".x.axis").call(xAxis);
     }
 };
+*/
 
 function handleNewHash() {
     var location = window.location.hash.replace(/^#\/?|\/$/g, '').split('/');
@@ -193,6 +223,56 @@ function handleNewHash() {
         var application = React.createElement(Reviews, { location: location });
     }
     ReactDOM.render(application, document.getElementById('content'));
+};
+
+function drawPlot(api_url) {
+    var margin = { top: 40, right: 20, bottom: 30, left: 40 },
+        width = 960 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    var formatPercent = d3.format(".0%");
+
+    var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+
+    var y = d3.scale.linear().range([height, 0]);
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+
+    var yAxis = d3.svg.axis().scale(y).orient("left").tickFormat(formatPercent);
+
+    var tip = d3.tip().attr('class', 'd3-tip').offset([-10, 0]).html(function (d) {
+        return "<strong>Frequency:</strong> <span style='color:red'>" + d.frequency + "</span>";
+    });
+
+    var svg = d3.select("body").append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.call(tip);
+
+    d3.tsv("data.tsv", type, function (error, data) {
+        x.domain(data.map(function (d) {
+            return d.letter;
+        }));
+        y.domain([0, d3.max(data, function (d) {
+            return d.frequency;
+        })]);
+
+        svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + height + ")").call(xAxis);
+
+        svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text("Frequency");
+
+        svg.selectAll(".bar").data(data).enter().append("rect").attr("class", "bar").attr("x", function (d) {
+            return x(d.letter);
+        }).attr("width", x.rangeBand()).attr("y", function (d) {
+            return y(d.frequency);
+        }).attr("height", function (d) {
+            return height - y(d.frequency);
+        }).on('mouseover', tip.show).on('mouseout', tip.hide);
+    });
+
+    function type(d) {
+        d.frequency = +d.frequency;
+        return d;
+    }
 };
 
 handleNewHash();
