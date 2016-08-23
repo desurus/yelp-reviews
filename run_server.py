@@ -16,19 +16,23 @@ app = Flask(__name__)
 
 @app.route('/api/v1.0/businesses/', methods=['GET'])
 def get_businesses():
-    db = setup_mongo()
-    cursor = db.business.find()
-    result = []
-    for document in cursor:
-        result.append({
-            "id": str(document['_id']),
-            "name": document['name'],
-            "url": document['url'],
-            "status": document['status'],
-            "icon_url": document['icon'],
-        })
+    try:
+        db = setup_mongo()
+        cursor = db.business.find()
+        result = []
+        for document in cursor:
+            result.append({
+                "id": str(document['_id']),
+                "name": document['name'].strip(),
+                "url": document['url'],
+                "status": document['status'],
+                "icon_url": document['icon'],
+            })
 
-    return jsonify(result)
+        return jsonify(result)
+    except:
+        response = json.dumps({"status": 404, "details": "no records found for the businesses"})
+        return response, 404
 
 
 @app.route('/api/v1.0/reviews/<business_id>/', methods=['GET'])
@@ -51,6 +55,27 @@ def get_reviews(business_id):
         return jsonify(result)
     except:
         response = json.dumps({"status": 404, "details": "document id not found"})
+        return response, 404
+
+
+@app.route('/api/v1.0/businesses/<business_id>/', methods=['GET'])
+def get_business(business_id):
+    try:
+        db = setup_mongo()
+        business_bson_id = ObjectId(business_id)
+        cursor = db.business.find({'_id': business_bson_id})
+        result = []
+
+        for document in cursor:
+            result.append({
+                "id": str(document['_id']),
+                "name": document['name'].strip(),
+                "icon_url": document['icon'],
+            })
+
+        return jsonify(result)
+    except:
+        response = json.dumps({"status": 404, "details": "no business with id {0} found".format(business_id)})
         return response, 404
 
 
