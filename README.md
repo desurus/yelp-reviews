@@ -8,6 +8,7 @@ Installation
 
 This project is build in Python. Make sure you have Python 2.7+ installed on your system.
 You will also need:
+* [scrapy](http://scrapy.org/) crawling engine for python
 * [nltk](http://www.nltk.org/) library for python
 * [mongodb](https://www.mongodb.com/download-center?jmp=docs#community)
 * [flask](http://flask.pocoo.org/) framework for python
