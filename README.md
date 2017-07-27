@@ -1,7 +1,7 @@
 # NLP to analyse restaurant reviews
 
 This is a demo project aimed to demonstrate use of NLP algorithms to perform sentiment analysis of the restaurant reviews.
-Then the calculated score is compared with the rating given by the review author. [live example](http://nlp-demo.desurus.com/)
+Then the calculated score is compared with the rating given by the review author.
 
 Installation
 -----
@@ -26,6 +26,3 @@ Follow these steps to populate project with data to display:
 * There are too many data points to display pretty, we need to calculate avarages by running **./run_norm.py**
 * You now should have all the data necessary in the mongodb to display. We just need to run the server. Run **sudo ./run_server.py > /dev/null 2>&1 &** to start the server. 
 * Now you can visit http://127.0.0.1 to see something like this:
-
-![NLP demo screenshot](http://nlp-demo.desurus.com/static/nlp_demo1.png 'NLP demo screenshot')
-![NLP demo screenshot](http://nlp-demo.desurus.com/static/nlp_demo2.png 'NLP demo screenshot')
